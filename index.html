@@ -8,12 +8,21 @@
     <!-- Sidebar display -->
     <div class="w3-sidebar w3-light-grey w3-bar-block" style="width:20%">
       <h3 class="w3-bar-item">Find Location</h3>
+
       <!-- Search Bar -->
       <form data-bind="submit: findLocation">
-          Location:
-          <input data-bind='value: loc' />
-          <button type="submit">Search</button>
+          <p class="sidebar-element"> Location: </p>
+          <input class="sidebar-element" data-bind='value: searchLocation' />
+          <button class="sidebar-element" type="submit">Search</button>
       </form>
+
+      <!-- Let's users see all locations-->
+      <button class="sidebar-element" data-bind="click: showAll">Show All</button>
+
+      <!-- Sidebar list of locations -->
+      <ul data-bind="foreach: locationList">
+        <li data-bind="text: title, visible: display, click: $parent.activateMark"></li>
+      </ul>
 
     </div>
 

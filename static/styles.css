@@ -9,3 +9,8 @@ body {
 #map {
   height: 100%;
 }
+
+.sidebar-element {
+  margin-left: 20px;
+  margin-bottom: 10px;
+}

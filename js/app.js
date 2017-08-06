@@ -1,11 +1,20 @@
-function ViewModel() {
-  this.loc = ko.observable("");
-  this.findLocation = function() {
-    console.log(this.loc());
+// Data for map locations
+var initialLocations = [
+  {title: 'Park Ave Penthouse', location: {lat: 40.7713024, lng: -73.9632393}},
+  {title: 'Chelsea Loft', location: {lat: 40.7444883, lng: -73.9949465}},
+  {title: 'Union Square Open Floor Plan', location: {lat: 40.7347062, lng: -73.9895759}},
+  {title: 'East Village Hip Studio', location: {lat: 40.7281777, lng: -73.984377}},
+  {title: 'TriBeCa Artsy Bachelor Pad', location: {lat: 40.7195264, lng: -74.0089934}},
+  {title: 'Chinatown Homey Space', location: {lat: 40.7180628, lng: -73.9961237}}
+];
 
-  };
+var Location = function(data) {
+  this.title = ko.observable(data.title);
+  this.location = ko.observable(data.location);
+  this.display = ko.observable(true);
 
-};
+}
+
 
 
 
@@ -53,6 +62,7 @@ function initMap() {
     markers.push(marker);
     // Create an onclick event to open an infowindow at each marker.
     marker.addListener('click', function() {
+      bounceAnimation(this);
       populateInfoWindow(this, largeInfowindow);
     });
     bounds.extend(markers[i].position);
@@ -78,5 +88,63 @@ function populateInfoWindow(marker, infowindow) {
 }
 
 /* End of Maps excercise stuff */
+
+function ViewModel() {
+  var self = this;
+  this.searchLocation = ko.observable("");
+  this.locationList = ko.observableArray([]);
+
+  initialLocations.forEach(function(locationItem) {
+    self.locationList.push( new Location(locationItem) );
+  });
+
+  // Search bar function for narrowing list
+  this.findLocation = function() {
+    var search = this.searchLocation();
+    // Checking to see if search word in title and
+    // turn off markers that are not in search
+    self.locationList().forEach(function(location) {
+      if (~location.title().toUpperCase().indexOf(search.toUpperCase())) {
+        location.display(true);
+      } else {
+        location.display(false);
+        markers.forEach(function(marker) {
+          if (marker.title === location.title()) {
+            marker.setMap(null);
+          }
+        })
+      }
+    });
+
+  };
+
+  // Animates map markers
+  this.activateMark = function(location) {
+    markers.forEach(function(marker) {
+      if (marker.title === location.title()) {
+        bounceAnimation(marker);
+      }
+    });
+  }
+
+  // Shows entire list and map markers again
+  this.showAll = function() {
+    self.locationList().forEach(function(location) {
+      location.display(true);
+    });
+    markers.forEach(function(marker) {
+      marker.setMap(map);
+    })
+  }
+};
+
+// Bounce animation
+function bounceAnimation(marker) {
+    marker.setAnimation(google.maps.Animation.BOUNCE);
+    // Stops bouncing animation. Saw on stacks overflow by ScottE
+    setTimeout(function () {
+        marker.setAnimation(null);
+    }, 2100);
+}
 
 ko.applyBindings(new ViewModel());
