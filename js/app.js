@@ -98,12 +98,15 @@ function ViewModel() {
   var client_id = 'ROOEVLVD2ZBSTY3BYUFG5EZX3JDMOFAVK5INURCTSWSSWNM1';
   var client_secret = 'YTENDFGB4LA2PR2BZ5CW0MSNWPGZXXKCRVAN3HJOKOBQYOAT';
   var v = '20170808';
+  var errorEncountered = false;
 
   // Initializing Location objects
   initialLocations.forEach(function(locationItem) {
     var requestUrl = foursquareUrl + locationItem.foursquareId + '?&client_id='+client_id+'&client_secret='+client_secret+'&v='+v;
     $.getJSON(requestUrl).done(function(data) {
       self.locationList.push( new Location(locationItem, data.response.venue) );
+    }).error(function() {
+      alert('Foursquare Data has failed to load. Please refresh browser and try again.');
     });
   });
 
@@ -141,8 +144,9 @@ function ViewModel() {
     });
   }
 
-  // Shows foursquare info. Opens and closes upon click
+  // Animates marker. Shows foursquare info. Opens and closes upon click
   self.activateFoursquareInfo = function(location) {
+    self.activateMark(location);
     if (location.displayFoursquare() === true) {
       location.displayFoursquare(false);
     } else {
@@ -162,7 +166,7 @@ function ViewModel() {
     });
     markers.forEach(function(marker) {
       marker.setMap(map);
-    })
+    });
   }
 }
 
