@@ -1,22 +1,26 @@
 // Data for map locations
 var initialLocations = [
-  {title: 'Park Ave Penthouse', location: {lat: 40.7713024, lng: -73.9632393}},
-  {title: 'Chelsea Loft', location: {lat: 40.7444883, lng: -73.9949465}},
-  {title: 'Union Square Open Floor Plan', location: {lat: 40.7347062, lng: -73.9895759}},
-  {title: 'East Village Hip Studio', location: {lat: 40.7281777, lng: -73.984377}},
-  {title: 'TriBeCa Artsy Bachelor Pad', location: {lat: 40.7195264, lng: -74.0089934}},
-  {title: 'Chinatown Homey Space', location: {lat: 40.7180628, lng: -73.9961237}}
+  {title: 'The Coffee Bean Tea Leaf', location: {lat: 33.8459969, lng: -118.0368042}, foursquareId: '4ac65fc1f964a52006b420e3'},
+  {title: 'Solid Coffee Roasters', location: {lat: 33.8591264, lng: -118.0732763}, foursquareId: '57c73ed7498e299e2f4950b2'},
+  {title: "It's a Grind Coffee House", location: {lat: 33.858996, lng: -118.049271}, foursquareId: '4a8ae9a7f964a520d00a20e3'},
+  {title: 'Starbucks', location: {lat: 33.85803, lng: -118.1157}, foursquareId: '4a999abdf964a520612f20e3'},
+  {title: 'Sharetea', location: {lat: 33.857939, lng: -118.080388}, foursquareId: '552c2e28498e15f96e3f65de'}
 ];
 
-var Location = function(data) {
+
+// Location object
+var Location = function(data, foursquareData) {
+  var img_size = '250x250'
   this.title = ko.observable(data.title);
   this.location = ko.observable(data.location);
-  this.display = ko.observable(true);
+  this.displayMarker = ko.observable(true);
+  this.foursquareId = ko.observable(data.foursquareId);
+  this.url = ko.observable(foursquareData.canonicalUrl);
+  this.rating = ko.observable(foursquareData.rating);
+  this.displayFoursquare = ko.observable(false);
+  this.img = ko.observable(foursquareData.bestPhoto.prefix + img_size + foursquareData.bestPhoto.suffix);
 
 }
-
-
-
 
 /* Maps excercise stuff */
 var map;
@@ -27,29 +31,18 @@ var markers = [];
 function initMap() {
   // Constructor creates a new map - only center and zoom are required.
   map = new google.maps.Map(document.getElementById('map'), {
-    center: {lat: 40.7413549, lng: -73.9980244},
-    zoom: 13
+    center: {lat: 33.857939, lng: -118.080388},
+    zoom: 14
   });
-
-  // These are the real estate listings that will be shown to the user.
-  // Normally we'd have these in a database instead.
-  var locations = [
-    {title: 'Park Ave Penthouse', location: {lat: 40.7713024, lng: -73.9632393}},
-    {title: 'Chelsea Loft', location: {lat: 40.7444883, lng: -73.9949465}},
-    {title: 'Union Square Open Floor Plan', location: {lat: 40.7347062, lng: -73.9895759}},
-    {title: 'East Village Hip Studio', location: {lat: 40.7281777, lng: -73.984377}},
-    {title: 'TriBeCa Artsy Bachelor Pad', location: {lat: 40.7195264, lng: -74.0089934}},
-    {title: 'Chinatown Homey Space', location: {lat: 40.7180628, lng: -73.9961237}}
-  ];
 
   var largeInfowindow = new google.maps.InfoWindow();
   var bounds = new google.maps.LatLngBounds();
 
   // The following group uses the location array to create an array of markers on initialize.
-  for (var i = 0; i < locations.length; i++) {
+  for (var i = 0; i < initialLocations.length; i++) {
     // Get the position from the location array.
-    var position = locations[i].location;
-    var title = locations[i].title;
+    var position = initialLocations[i].location;
+    var title = initialLocations[i].title;
     // Create a marker per location, and put into markers array.
     var marker = new google.maps.Marker({
       map: map,
@@ -94,32 +87,47 @@ function ViewModel() {
   this.searchLocation = ko.observable("");
   this.locationList = ko.observableArray([]);
 
+  // Getting location data from foursquare api
+  var foursquareUrl = 'https://api.foursquare.com/v2/venues/';
+  var client_id = 'ROOEVLVD2ZBSTY3BYUFG5EZX3JDMOFAVK5INURCTSWSSWNM1';
+  var client_secret = 'YTENDFGB4LA2PR2BZ5CW0MSNWPGZXXKCRVAN3HJOKOBQYOAT';
+  var v = '20170808';
+
+  // Initializing Location objects
   initialLocations.forEach(function(locationItem) {
-    self.locationList.push( new Location(locationItem) );
+    var requestUrl = foursquareUrl + locationItem.foursquareId + '?&client_id='+client_id+'&client_secret='+client_secret+'&v='+v;
+    $.getJSON(requestUrl).done(function(data) {
+      self.locationList.push( new Location(locationItem, data.response.venue) );
+    });
   });
 
   // Search bar function for narrowing list
-  this.findLocation = function() {
+  self.findLocation = function() {
     var search = this.searchLocation();
     // Checking to see if search word in title and
     // turn off markers that are not in search
     self.locationList().forEach(function(location) {
       if (~location.title().toUpperCase().indexOf(search.toUpperCase())) {
-        location.display(true);
+        location.displayMarker(true);
+        markers.forEach(function(marker) {
+          if (marker.title === location.title()) {
+            marker.setMap(map);
+          }
+        });
       } else {
-        location.display(false);
+        location.displayMarker(false);
         markers.forEach(function(marker) {
           if (marker.title === location.title()) {
             marker.setMap(null);
           }
-        })
+        });
       }
     });
 
   };
 
   // Animates map markers
-  this.activateMark = function(location) {
+  self.activateMark = function(location) {
     markers.forEach(function(marker) {
       if (marker.title === location.title()) {
         bounceAnimation(marker);
@@ -127,16 +135,32 @@ function ViewModel() {
     });
   }
 
-  // Shows entire list and map markers again
-  this.showAll = function() {
+  // Shows foursquare info. Opens and closes upon click
+  self.activateFoursquareInfo = function(location) {
+    if (location.displayFoursquare() === true) {
+      location.displayFoursquare(false);
+    } else {
+      location.displayFoursquare(true);
+    };
+    self.locationList().forEach(function(listItem) {
+      if (listItem.title() !== location.title()) {
+        listItem.displayFoursquare(false);
+      };
+    });
+  }
+
+  // Shows entire list and map markers for show all button
+  self.showAll = function() {
     self.locationList().forEach(function(location) {
-      location.display(true);
+      location.displayMarker(true);
     });
     markers.forEach(function(marker) {
       marker.setMap(map);
     })
   }
-};
+
+
+}
 
 // Bounce animation
 function bounceAnimation(marker) {
@@ -145,6 +169,7 @@ function bounceAnimation(marker) {
     setTimeout(function () {
         marker.setAnimation(null);
     }, 2100);
+
 }
 
 ko.applyBindings(new ViewModel());
