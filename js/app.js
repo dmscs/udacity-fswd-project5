@@ -77,7 +77,7 @@ function bounceAnimation(marker) {
 
 // Location object. Will store foursquare api data
 var Location = function(data, foursquareData) {
-  var img_size = '250x250'
+  var img_size = '250x250';
   this.title = ko.observable(data.title);
   this.location = ko.observable(data.location);
   this.displayMarker = ko.observable(true);
@@ -86,7 +86,7 @@ var Location = function(data, foursquareData) {
   this.rating = ko.observable(foursquareData.rating);
   this.displayFoursquare = ko.observable(false);
   this.img = ko.observable(foursquareData.bestPhoto.prefix + img_size + foursquareData.bestPhoto.suffix);
-}
+};
 
 function ViewModel() {
   var self = this;
@@ -142,7 +142,7 @@ function ViewModel() {
         bounceAnimation(marker);
       }
     });
-  }
+  };
 
   // Animates marker. Shows foursquare info. Opens and closes upon click
   self.activateFoursquareInfo = function(location) {
@@ -151,13 +151,13 @@ function ViewModel() {
       location.displayFoursquare(false);
     } else {
       location.displayFoursquare(true);
-    };
+    }
     self.locationList().forEach(function(listItem) {
       if (listItem.title() !== location.title()) {
         listItem.displayFoursquare(false);
-      };
+      }
     });
-  }
+  };
 
   // Shows entire list and map markers for show all button
   self.showAll = function() {
@@ -167,7 +167,7 @@ function ViewModel() {
     markers.forEach(function(marker) {
       marker.setMap(map);
     });
-  }
+  };
 }
 
 
