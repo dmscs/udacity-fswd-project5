@@ -7,21 +7,6 @@ var initialLocations = [
   {title: 'Sharetea', location: {lat: 33.857939, lng: -118.080388}, foursquareId: '552c2e28498e15f96e3f65de'}
 ];
 
-
-// Location object
-var Location = function(data, foursquareData) {
-  var img_size = '250x250'
-  this.title = ko.observable(data.title);
-  this.location = ko.observable(data.location);
-  this.displayMarker = ko.observable(true);
-  this.foursquareId = ko.observable(data.foursquareId);
-  this.url = ko.observable(foursquareData.canonicalUrl);
-  this.rating = ko.observable(foursquareData.rating);
-  this.displayFoursquare = ko.observable(false);
-  this.img = ko.observable(foursquareData.bestPhoto.prefix + img_size + foursquareData.bestPhoto.suffix);
-
-}
-
 /* Maps excercise stuff */
 var map;
 
@@ -79,8 +64,29 @@ function populateInfoWindow(marker, infowindow) {
     });
   }
 }
-
 /* End of Maps excercise stuff */
+
+// Bounce animation on click. Used in both initMap and ViewModel
+function bounceAnimation(marker) {
+    marker.setAnimation(google.maps.Animation.BOUNCE);
+    // Stops bouncing animation. Saw on stacks overflow by ScottE
+    setTimeout(function () {
+        marker.setAnimation(null);
+    }, 2100);
+}
+
+// Location object. Will store foursquare api data
+var Location = function(data, foursquareData) {
+  var img_size = '250x250'
+  this.title = ko.observable(data.title);
+  this.location = ko.observable(data.location);
+  this.displayMarker = ko.observable(true);
+  this.foursquareId = ko.observable(data.foursquareId);
+  this.url = ko.observable(foursquareData.canonicalUrl);
+  this.rating = ko.observable(foursquareData.rating);
+  this.displayFoursquare = ko.observable(false);
+  this.img = ko.observable(foursquareData.bestPhoto.prefix + img_size + foursquareData.bestPhoto.suffix);
+}
 
 function ViewModel() {
   var self = this;
@@ -158,18 +164,7 @@ function ViewModel() {
       marker.setMap(map);
     })
   }
-
-
 }
 
-// Bounce animation
-function bounceAnimation(marker) {
-    marker.setAnimation(google.maps.Animation.BOUNCE);
-    // Stops bouncing animation. Saw on stacks overflow by ScottE
-    setTimeout(function () {
-        marker.setAnimation(null);
-    }, 2100);
-
-}
 
 ko.applyBindings(new ViewModel());
