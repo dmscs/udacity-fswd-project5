@@ -6,7 +6,7 @@
   </head>
   <body>
     <!-- Sidebar display -->
-    <div class="w3-sidebar w3-light-grey w3-bar-block" style="width:20%">
+    <div class="w3-sidebar w3-light-grey w3-bar-block" style="width:30%">
       <h3 class="w3-bar-item">Find Location</h3>
 
       <!-- Search Bar -->
@@ -21,18 +21,28 @@
 
       <!-- Sidebar list of locations -->
       <ul data-bind="foreach: locationList">
-        <li data-bind="text: title, visible: display, click: $parent.activateMark"></li>
+        <li data-bind="text: title, visible: displayMarker, click: $parent.activateMark, click: $parent.activateFoursquareInfo"></li>
+
+        <!-- Display foursquare info -->
+        <div class="sidebar-element" data-bind="visible: displayFoursquare">
+          <img data-bind="attr: { src: img }"></img>
+          <br>Rating:
+          <span data-bind="text: rating"></span>
+          <br><a data-bind="attr: { href: url }">Link to Foursquare Page</a>
+        </div>
       </ul>
 
     </div>
 
     <div id="map"></div>
 
+    <script src="js/lib/jquery.min.js"></script>
     <script src="js/lib/knockout-3.2.0.js"></script>
     <script src="js/app.js"></script>
     <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAZwbSKKVZdDwCMDrBYuxVlRTwaTnt5IlU&v=3&callback=initMap">
     </script>
+
 
   </body>
 </html>
