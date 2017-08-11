@@ -6,11 +6,16 @@ body {
   padding: 0;
 }
 
+/* Aligning map to right and sizing at width of 80% as sidebar
+ element covers part of map */
 #map {
   height: 100%;
+  width: 70%;
+  position: absolute;
+  right: 0px;
 }
 
 .sidebar-element {
-  margin-left: 20px;
+  margin-left: 10px;
   margin-bottom: 10px;
 }
