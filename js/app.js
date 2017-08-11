@@ -22,6 +22,13 @@ function initMap() {
 
   var largeInfowindow = new google.maps.InfoWindow();
   var bounds = new google.maps.LatLngBounds();
+  // On click animate marker and create window
+  this.windowAndAnimation = function(marker) {
+    marker.addListener('click', function() {
+      bounceAnimation(this);
+      populateInfoWindow(this, largeInfowindow);
+    });
+  };
 
   // The following group uses the location array to create an array of markers on initialize.
   for (var i = 0; i < initialLocations.length; i++) {
@@ -39,10 +46,7 @@ function initMap() {
     // Push the marker to our array of markers.
     markers.push(marker);
     // Create an onclick event to open an infowindow at each marker.
-    marker.addListener('click', function() {
-      bounceAnimation(this);
-      populateInfoWindow(this, largeInfowindow);
-    });
+    windowAndAnimation(marker);
     bounds.extend(markers[i].position);
   }
   // Extend the boundaries of the map for each marker
