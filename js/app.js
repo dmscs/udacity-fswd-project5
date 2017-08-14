@@ -129,14 +129,14 @@ function ViewModel() {
         location.displayMarker(true);
         markers.forEach(function(marker) {
           if (marker.title === location.title()) {
-            marker.setMap(map);
+            marker.setVisible(true);
           }
         });
       } else {
         location.displayMarker(false);
         markers.forEach(function(marker) {
           if (marker.title === location.title()) {
-            marker.setMap(null);
+            marker.setVisible(false);
           }
         });
       }
