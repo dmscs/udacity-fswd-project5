@@ -53,9 +53,9 @@ function initMap() {
   map.fitBounds(bounds);
 }
 
-// This function populates the infowindow when the marker is clicked. We'll only allow
-// one infowindow which will open at the marker that is clicked, and populate based
-// on that markers position.
+/* This function populates the infowindow when the marker is  clicked. We'll only allow
+  one infowindow which will open at the marker that is clicked, and populate based
+  on that markers position. */
 function populateInfoWindow(marker, infowindow) {
   // Check to make sure the infowindow is not already opened on this marker.
   if (infowindow.marker != marker) {
@@ -66,6 +66,7 @@ function populateInfoWindow(marker, infowindow) {
     infowindow.addListener('closeclick',function(){
       infowindow.setMarker = null;
     });
+    console.log('test');
   }
 }
 /* End of Maps excercise stuff */
@@ -87,14 +88,14 @@ function mapsError() {
 // Location object. Will store foursquare api data
 var Location = function(data, foursquareData) {
   var img_size = '250x250';
-  this.title = ko.observable(data.title);
-  this.location = ko.observable(data.location);
-  this.displayMarker = ko.observable(true);
-  this.foursquareId = ko.observable(data.foursquareId);
-  this.url = ko.observable(foursquareData.canonicalUrl);
-  this.rating = ko.observable(foursquareData.rating);
+  this.title = data.title;
+  this.location = data.location;
+  this.displayLocation = ko.observable(true);
+  this.foursquareId = data.foursquareId;
+  this.url = foursquareData.canonicalUrl;
+  this.rating = foursquareData.rating;
   this.displayFoursquare = ko.observable(false);
-  this.img = ko.observable(foursquareData.bestPhoto.prefix + img_size + foursquareData.bestPhoto.suffix);
+  this.img = foursquareData.bestPhoto.prefix + img_size + foursquareData.bestPhoto.suffix;
 };
 
 function ViewModel() {
@@ -122,20 +123,20 @@ function ViewModel() {
   // Search bar function for narrowing list
   self.findLocation = function() {
     var search = this.searchLocation();
-    // Checking to see if search word in title and
-    // turn off markers that are not in search
+    /* Checking to see if search word in title and
+       turn off markers that are not in search */
     self.locationList().forEach(function(location) {
-      if (~location.title().toUpperCase().indexOf(search.toUpperCase())) {
-        location.displayMarker(true);
+      if (~location.title.toUpperCase().indexOf(search.toUpperCase())) {
+        location.displayLocation(true);
         markers.forEach(function(marker) {
-          if (marker.title === location.title()) {
+          if (marker.title === location.title) {
             marker.setVisible(true);
           }
         });
       } else {
-        location.displayMarker(false);
+        location.displayLocation(false);
         markers.forEach(function(marker) {
-          if (marker.title === location.title()) {
+          if (marker.title === location.title) {
             marker.setVisible(false);
           }
         });
@@ -147,7 +148,7 @@ function ViewModel() {
   // Animates map markers
   self.activateMark = function(location) {
     markers.forEach(function(marker) {
-      if (marker.title === location.title()) {
+      if (marker.title === location.title) {
         bounceAnimation(marker);
       }
     });
@@ -162,7 +163,7 @@ function ViewModel() {
       location.displayFoursquare(true);
     }
     self.locationList().forEach(function(listItem) {
-      if (listItem.title() !== location.title()) {
+      if (listItem.title !== location.title) {
         listItem.displayFoursquare(false);
       }
     });
@@ -171,7 +172,7 @@ function ViewModel() {
   // Shows entire list and map markers for show all button
   self.showAll = function() {
     self.locationList().forEach(function(location) {
-      location.displayMarker(true);
+      location.displayLocation(true);
     });
     markers.forEach(function(marker) {
       marker.setMap(map);
