@@ -72,11 +72,16 @@ function populateInfoWindow(marker, infowindow) {
 
 // Bounce animation on click. Used in both initMap and ViewModel
 function bounceAnimation(marker) {
-    marker.setAnimation(google.maps.Animation.BOUNCE);
-    // Stops bouncing animation. Saw on stacks overflow by ScottE
-    setTimeout(function () {
-        marker.setAnimation(null);
-    }, 2100);
+  marker.setAnimation(google.maps.Animation.BOUNCE);
+  // Stops bouncing animation. Saw on stacks overflow by ScottE
+  setTimeout(function () {
+      marker.setAnimation(null);
+  }, 2100);
+}
+
+// Error handling for google maps
+function mapsError() {
+  alert('Google Maps failed to load. Please refresh browser and try again.')
 }
 
 // Location object. Will store foursquare api data
