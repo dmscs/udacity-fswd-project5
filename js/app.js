@@ -32,7 +32,7 @@ function bounceAnimation(marker) {
 
 // Error handling for google maps
 function mapsError() {
-  alert('Google Maps failed to load. Please refresh browser and try again.')
+  alert('Google Maps failed to load. Please refresh browser and try again.');
 }
 
 // Location object. Will store foursquare api data
@@ -72,7 +72,6 @@ function ViewModel() {
   var v = '20170808';
   var errorEncountered = false;
   var markerCount = 0;
-  var bounds = new google.maps.LatLngBounds();
 
   // Initializing Location objects
   initialLocations.forEach(function(locationItem) {
@@ -93,13 +92,13 @@ function ViewModel() {
 
   // Create boundary for google maps
   self.addBounds = function(position) {
-    markerCount+=1
+    markerCount+=1;
     bounds.extend(position);
     // Only does fitBounds when all markers have been iterated
     if (markerCount === initialLocations.length) {
       map.fitBounds(bounds);
     }
-  }
+  };
 
   // Search bar function for narrowing list
   self.findLocation = function() {
@@ -117,7 +116,7 @@ function ViewModel() {
       }
     });
     return true;
-  }
+  };
 
   // Animates map markers
   self.activateMark = function(location) {
