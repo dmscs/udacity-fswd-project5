@@ -142,9 +142,7 @@ function ViewModel() {
   self.showAll = function() {
     self.locationList().forEach(function(location) {
       location.displayLocation(true);
-    });
-    markers.forEach(function(marker) {
-      marker.setMap(map);
+      location.marker.setVisible(true);
     });
   };
 }
