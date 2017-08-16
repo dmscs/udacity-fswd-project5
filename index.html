@@ -10,14 +10,9 @@
       <h3 class="w3-bar-item">Find Location</h3>
 
       <!-- Search Bar -->
-      <form data-bind="submit: findLocation">
-          <p class="sidebar-element"> Location: </p>
-          <input class="sidebar-element" data-bind='value: searchLocation' />
-          <button class="sidebar-element" type="submit">Search</button>
-      </form>
-
-      <!-- Let's users see all locations-->
-      <button class="sidebar-element" data-bind="click: showAll">Show All</button>
+      <p class="sidebar-element"> Location:
+        <input data-bind="textInput: searchLocation, event: { keypress: findLocation }"
+      </p>
 
       <!-- Sidebar list of locations -->
       <ul data-bind="foreach: locationList">
