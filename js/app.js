@@ -1,3 +1,5 @@
+var map;
+
 // Data for map locations
 var initialLocations = [
   {title: 'The Coffee Bean Tea Leaf', location: {lat: 33.8459969, lng: -118.0368042}, foursquareId: '4ac65fc1f964a52006b420e3'},
@@ -30,6 +32,16 @@ function bounceAnimation(marker) {
   }, 2100);
 }
 
+// Initialize google maps
+function initMap() {
+  map = new google.maps.Map(document.getElementById('map'), {
+    center: {lat: 33.857939, lng: -118.080388},
+    zoom: 14
+  });
+  var bounds = new google.maps.LatLngBounds();
+  return bounds
+}
+
 // Error handling for google maps
 function mapsError() {
   alert('Google Maps failed to load. Please refresh browser and try again.');
@@ -55,12 +67,8 @@ var Location = function(initialLocData, foursquareData, map) {
 };
 
 function ViewModel() {
-  var map = new google.maps.Map(document.getElementById('map'), {
-    center: {lat: 33.857939, lng: -118.080388},
-    zoom: 14
-  });
-  var largeInfowindow = new google.maps.InfoWindow();
-  var bounds = new google.maps.LatLngBounds();
+  bounds = initMap();
+
   var self = this;
   this.searchLocation = ko.observable("");
   this.locationList = ko.observableArray([]);

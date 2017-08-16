@@ -24,3 +24,7 @@ li {
   margin-left: 10px;
   margin-bottom: 10px;
 }
+
+.input-bar {
+  width: 96%;
+}
