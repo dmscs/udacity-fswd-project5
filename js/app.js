@@ -133,10 +133,10 @@ function ViewModel() {
 
   // Animates marker. Shows foursquare info. Opens and closes upon click
   self.activateFoursquareInfo = function(location) {
-    self.activateMark(location);
     if (location.displayFoursquare() === true) {
       location.displayFoursquare(false);
     } else {
+      self.activateMark(location);
       location.displayFoursquare(true);
     }
     self.locationList().forEach(function(listItem) {
