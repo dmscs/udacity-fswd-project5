@@ -39,7 +39,7 @@ function initMap() {
     zoom: 14
   });
   var bounds = new google.maps.LatLngBounds();
-  return bounds
+  return bounds;
 }
 
 // Error handling for google maps
