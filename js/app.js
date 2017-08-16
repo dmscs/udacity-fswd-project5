@@ -7,55 +7,7 @@ var initialLocations = [
   {title: 'Sharetea', location: {lat: 33.857939, lng: -118.080388}, foursquareId: '552c2e28498e15f96e3f65de'}
 ];
 
-/* Maps excercise stuff */
-var map;
-
-// Create a new blank array for all the listing markers.
-var markers = [];
-
-function initMap() {
-  // Constructor creates a new map - only center and zoom are required.
-  map = new google.maps.Map(document.getElementById('map'), {
-    center: {lat: 33.857939, lng: -118.080388},
-    zoom: 14
-  });
-
-  var largeInfowindow = new google.maps.InfoWindow();
-  var bounds = new google.maps.LatLngBounds();
-  // On click animate marker and create window
-  this.windowAndAnimation = function(marker) {
-    marker.addListener('click', function() {
-      bounceAnimation(this);
-      populateInfoWindow(this, largeInfowindow);
-    });
-  };
-
-  // The following group uses the location array to create an array of markers on initialize.
-  for (var i = 0; i < initialLocations.length; i++) {
-    // Get the position from the location array.
-    var position = initialLocations[i].location;
-    var title = initialLocations[i].title;
-    // Create a marker per location, and put into markers array.
-    var marker = new google.maps.Marker({
-      map: map,
-      position: position,
-      title: title,
-      animation: google.maps.Animation.DROP,
-      id: i
-    });
-    // Push the marker to our array of markers.
-    markers.push(marker);
-    // Create an onclick event to open an infowindow at each marker.
-    windowAndAnimation(marker);
-    bounds.extend(markers[i].position);
-  }
-  // Extend the boundaries of the map for each marker
-  map.fitBounds(bounds);
-}
-
-/* This function populates the infowindow when the marker is  clicked. We'll only allow
-  one infowindow which will open at the marker that is clicked, and populate based
-  on that markers position. */
+// Create window when marker clicked
 function populateInfoWindow(marker, infowindow) {
   // Check to make sure the infowindow is not already opened on this marker.
   if (infowindow.marker != marker) {
@@ -66,10 +18,8 @@ function populateInfoWindow(marker, infowindow) {
     infowindow.addListener('closeclick',function(){
       infowindow.setMarker = null;
     });
-    console.log('test');
   }
 }
-/* End of Maps excercise stuff */
 
 // Bounce animation on click. Used in both initMap and ViewModel
 function bounceAnimation(marker) {
@@ -86,19 +36,31 @@ function mapsError() {
 }
 
 // Location object. Will store foursquare api data
-var Location = function(data, foursquareData) {
+var Location = function(initialLocData, foursquareData, map) {
   var img_size = '250x250';
-  this.title = data.title;
-  this.location = data.location;
+  this.title = initialLocData.title;
+  this.location = initialLocData.location;
   this.displayLocation = ko.observable(true);
-  this.foursquareId = data.foursquareId;
+  this.foursquareId = initialLocData.foursquareId;
   this.url = foursquareData.canonicalUrl;
   this.rating = foursquareData.rating;
   this.displayFoursquare = ko.observable(false);
   this.img = foursquareData.bestPhoto.prefix + img_size + foursquareData.bestPhoto.suffix;
+  this.marker = new google.maps.Marker({
+    map: map,
+    position: initialLocData.location,
+    title: initialLocData.title,
+    animation: google.maps.Animation.DROP,
+  });
 };
 
 function ViewModel() {
+  var map = new google.maps.Map(document.getElementById('map'), {
+    center: {lat: 33.857939, lng: -118.080388},
+    zoom: 14
+  });
+  var largeInfowindow = new google.maps.InfoWindow();
+  var bounds = new google.maps.LatLngBounds();
   var self = this;
   this.searchLocation = ko.observable("");
   this.locationList = ko.observableArray([]);
@@ -109,16 +71,35 @@ function ViewModel() {
   var client_secret = 'YTENDFGB4LA2PR2BZ5CW0MSNWPGZXXKCRVAN3HJOKOBQYOAT';
   var v = '20170808';
   var errorEncountered = false;
+  var markerCount = 0;
+  var bounds = new google.maps.LatLngBounds();
 
   // Initializing Location objects
   initialLocations.forEach(function(locationItem) {
     var requestUrl = foursquareUrl + locationItem.foursquareId + '?&client_id='+client_id+'&client_secret='+client_secret+'&v='+v;
+
     $.getJSON(requestUrl).done(function(data) {
-      self.locationList.push( new Location(locationItem, data.response.venue) );
+      var locationObject = new Location(locationItem, data.response.venue, map);
+      self.locationList.push( locationObject );
+      self.addBounds(locationObject.marker.position);
+      // Add event listener for markers
+      locationObject.marker.addListener('click', function() {
+        self.activateFoursquareInfo(locationObject);
+      });
     }).error(function() {
       alert('Foursquare Data has failed to load. Please refresh browser and try again.');
     });
   });
+
+  // Create boundary for google maps
+  self.addBounds = function(position) {
+    markerCount+=1
+    bounds.extend(position);
+    // Only does fitBounds when all markers have been iterated
+    if (markerCount === initialLocations.length) {
+      map.fitBounds(bounds);
+    }
+  }
 
   // Search bar function for narrowing list
   self.findLocation = function() {
@@ -128,30 +109,18 @@ function ViewModel() {
     self.locationList().forEach(function(location) {
       if (~location.title.toUpperCase().indexOf(search.toUpperCase())) {
         location.displayLocation(true);
-        markers.forEach(function(marker) {
-          if (marker.title === location.title) {
-            marker.setVisible(true);
-          }
-        });
+        location.marker.setVisible(true);
       } else {
         location.displayLocation(false);
-        markers.forEach(function(marker) {
-          if (marker.title === location.title) {
-            marker.setVisible(false);
-          }
-        });
+        location.marker.setVisible(false);
+        location.displayFoursquare(false);
       }
     });
-
-  };
+  }
 
   // Animates map markers
   self.activateMark = function(location) {
-    markers.forEach(function(marker) {
-      if (marker.title === location.title) {
-        bounceAnimation(marker);
-      }
-    });
+    bounceAnimation(location.marker);
   };
 
   // Animates marker. Shows foursquare info. Opens and closes upon click
@@ -180,5 +149,6 @@ function ViewModel() {
   };
 }
 
-
-ko.applyBindings(new ViewModel());
+function initApp() {
+  ko.applyBindings(new ViewModel());
+}
