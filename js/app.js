@@ -116,6 +116,7 @@ function ViewModel() {
         location.displayFoursquare(false);
       }
     });
+    return true;
   }
 
   // Animates map markers
@@ -135,14 +136,6 @@ function ViewModel() {
       if (listItem.title !== location.title) {
         listItem.displayFoursquare(false);
       }
-    });
-  };
-
-  // Shows entire list and map markers for show all button
-  self.showAll = function() {
-    self.locationList().forEach(function(location) {
-      location.displayLocation(true);
-      location.marker.setVisible(true);
     });
   };
 }
