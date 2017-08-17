@@ -93,7 +93,7 @@ function ViewModel() {
       locationObject.marker.addListener('click', function() {
         self.activateFoursquareInfo(locationObject);
       });
-    }).error(function() {
+    }).fail(function() {
       alert('Foursquare Data has failed to load. Please refresh browser and try again.');
     });
   });
