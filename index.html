@@ -4,6 +4,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="static/styles.css">
+    <title>Neighborhood Map</title>
   </head>
   <body>
     <!-- Sidebar display -->
@@ -20,13 +21,13 @@
         <li data-bind="text: title, visible: displayLocation, click: $parent.activateFoursquareInfo"></li>
 
         <!-- Display foursquare info -->
-        <div class="sidebar-element" data-bind="visible: displayFoursquare">
-          <img data-bind="attr: { src: img }" alt="coffee-picture"></img>
+        <p class="sidebar-element" data-bind="visible: displayFoursquare">
+          <img data-bind="attr: { src: img }" alt="coffee-picture">
           <br>Rating:
           <span data-bind="text: rating"></span>
           <br><a data-bind="attr: { href: url }">Link to Foursquare Page</a>
-          <br><p>Credit to Foursquare for coffee shop info</p>
-        </div>
+          <br>Credit to Foursquare for coffee shop info
+        </p>
       </ul>
 
     </div>
