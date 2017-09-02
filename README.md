@@ -1,5 +1,5 @@
 # Google Maps Web Application
-Makes use of Google Maps and Foursquare API. Shows coffee shop locations along with an image and rating info.
+Makes use of Google Maps and Foursquare API. Shows coffee shop locations along with an image and rating info. Proof of Concept for more complex maps integration for tutoring service.
 
 ## Setup
 Clone repo and open **index.html**.
