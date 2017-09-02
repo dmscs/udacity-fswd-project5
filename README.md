@@ -1,4 +1,4 @@
-# Project 5 Google Maps Web Application
+# Google Maps Web Application
 Makes use of Google Maps and Foursquare API. Shows coffee shop locations along with an image and rating info.
 
 ## Setup
